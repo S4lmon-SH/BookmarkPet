@@ -69,3 +69,26 @@ Reboot/login, sleep/wake, lock/unlock, physical Intel/macOS 13 execution, and li
 6. 다른 Mac에서 다운로드한 ZIP의 첫 실행과 Gatekeeper 안내를 확인합니다. Intel Mac과 실제 macOS 13에서도 실행을 확인합니다.
 
 재부팅·재로그인, 잠자기·복귀, 잠금·해제, 실제 Intel·macOS 13 실행, 실제 한글 입력기 조합은 **검증하지 않았습니다**. Developer ID 서명과 Apple 공증은 **설정하지 않았습니다**.
+
+## Website — 2026-10-09
+
+The website uses a concise white-and-blue layout, Korean and English static routes, and an interactive browser demo. The macOS app and release archive are unchanged by the website update.
+
+Twelve browser checks passed in local Chrome:
+
+- Korean content and loaded artwork; English route, language navigation, page title, and canonical metadata.
+- Whitespace-only badge state, Korean/multiline input, fixed icon width, long-note scrolling, immediate focus, and keeping text while closing/reopening the demo.
+- Clear/undo synchronization, invalidating clear undo after a new edit, outside-click dismissal of both the settings menu and popover, Escape, and keyboard activation.
+- First-launch instructions disclose missing Apple notarization. Download links point to the existing verified v0.1.0 universal release archive.
+- Responsive layouts at 320, 390, 800, and 1440 CSS pixels; reduced-motion behavior; light website appearance under a dark system setting; no JavaScript runtime errors.
+- No browser storage writes or third-party requests during the demo. The demo intentionally resets on page reload or language navigation and is not the native app's persistent storage.
+
+Local asset references, anchor targets, duplicate IDs, JavaScript syntax, and sitemap XML were checked. Desktop Korean, desktop English, and mobile Korean screenshots were visually reviewed. English output is regenerated from the same HTML structure with `node scripts/build-site.mjs`.
+
+### 홈페이지 검증
+
+흰 배경·파란 버튼과 간결한 설명, 한국어·영어 정적 페이지, 브라우저 체험으로 구성했습니다. 홈페이지 추가로 macOS 앱이나 기존 배포 파일은 변경하지 않았습니다.
+
+로컬 Chrome에서 브라우저 검사 12개가 통과했습니다. 언어 전환과 메타데이터, 메모·배지·비우기·되돌리기, 메뉴 바깥 클릭과 Escape, 포커스와 스크롤, 320·390·800·1440px 배치, 모션 줄이기, 오류 없는 실행을 확인했습니다. 체험 중 외부 요청과 브라우저 저장소 기록도 없었습니다.
+
+데스크톱 한국어·영어와 모바일 한국어 화면을 직접 확인했습니다. 다운로드는 검증된 v0.1.0 릴리스로 연결하고, Apple 공증이 없는 개발 버전이라는 안내를 제공합니다. 체험 입력은 페이지 메모리에만 남으며 새로고침·언어 전환 시 초기화됩니다.

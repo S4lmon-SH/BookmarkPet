@@ -10,7 +10,7 @@
 
 [English](README.md) · **한국어**
 
-[v0.1.0 다운로드](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.0) · [버그 제보](https://github.com/S4lmon-SH/BookmarkPet/issues) · [MIT 라이선스](LICENSE)
+[공식 홈페이지](https://s4lmon-sh.github.io/BookmarkPet/) · [v0.1.0 다운로드](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.0) · [버그 제보](https://github.com/S4lmon-SH/BookmarkPet/issues) · [MIT 라이선스](LICENSE)
 
 <p align="center">
   <img src="docs/images/popover.png" width="332" alt="두 줄의 메모와 설정 버튼이 있는 BookmarkPet 실제 팝오버 화면" />
@@ -121,6 +121,19 @@ open "$HOME/Applications/BookmarkPet.app"
 
 기존 앱을 교체하기 전에는 실행 중인 앱을 종료하세요.
 
+## 홈페이지
+
+[공식 홈페이지](https://s4lmon-sh.github.io/BookmarkPet/)는 GitHub Pages에서 `docs/` 폴더를 공개합니다. 한국어·영어 페이지와 브라우저 체험을 제공합니다. 체험 메모는 현재 페이지의 메모리에만 남으며 새로고침이나 언어 전환 시 초기화됩니다.
+
+`docs/index.html`, `docs/assets/styles.css`, `docs/assets/app.js`를 수정하세요. 영어 문구는 `scripts/site-en.json`에 있으며 Node.js로 영어 페이지를 다시 생성합니다.
+
+```sh
+node scripts/build-site.mjs
+python3 -m http.server 4173 --bind 127.0.0.1 --directory docs
+```
+
+`http://127.0.0.1:4173/`에서 한국어, `/en/`에서 영어 화면을 확인할 수 있습니다. 생성된 `docs/en/index.html`도 함께 커밋하세요. `main`에 올리면 `docs/`의 정적 파일이 배포되며 외부 웹 패키지는 사용하지 않습니다. Node.js는 영어 페이지 재생성에만 필요하고 macOS 앱 빌드에는 필요하지 않습니다.
+
 ## 소스 구성
 
 | 경로 | 역할 |
@@ -131,6 +144,8 @@ open "$HOME/Applications/BookmarkPet.app"
 | `scripts/make_icon.swift` | 네이티브 앱 아이콘 생성 |
 | `scripts/build.sh` / `scripts/package.sh` | 현재 Mac 또는 유니버설 빌드와 배포 파일 생성 |
 | `scripts/test.sh` / `Tests/` | 핵심 테스트와 독립 테스트 러너 |
+| `docs/index.html` / `docs/assets/` / `docs/en/` | 공식 홈페이지와 브라우저 체험 |
+| `scripts/build-site.mjs` / `scripts/site-en.json` | 홈페이지 영어 문구와 페이지 생성 |
 
 `Package.swift`에는 `swift test`용 Swift Testing 테스트도 포함되어 있습니다. 독립 테스트 러너는 개발 Mac에서 발견한 SwiftPM 프레임워크 로딩 문제를 우회합니다.
 

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://s4lmon-sh.github.io/BookmarkPet/sitemap.xml

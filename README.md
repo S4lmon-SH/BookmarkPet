@@ -10,7 +10,7 @@ A tiny macOS menu bar companion that keeps one note for your next work session. 
 
 **English** · [한국어](README.ko.md)
 
-[Download v0.1.0](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.0) · [Report a bug](https://github.com/S4lmon-SH/BookmarkPet/issues) · [MIT license](LICENSE)
+[Website](https://s4lmon-sh.github.io/BookmarkPet/en/) · [Download v0.1.0](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.0) · [Report a bug](https://github.com/S4lmon-SH/BookmarkPet/issues) · [MIT license](LICENSE)
 
 <p align="center">
   <img src="docs/images/popover.png" width="332" alt="Actual BookmarkPet popover with a two-line Korean note and a settings menu button" />
@@ -121,6 +121,19 @@ open "$HOME/Applications/BookmarkPet.app"
 
 Quit an existing copy before replacing it.
 
+## Website
+
+The [official website](https://s4lmon-sh.github.io/BookmarkPet/en/) is served from `docs/` through GitHub Pages. It includes Korean and English pages and a browser demo. Demo notes stay only in page memory and reset on reload or language navigation.
+
+Edit `docs/index.html`, `docs/assets/styles.css`, and `docs/assets/app.js`. English text lives in `scripts/site-en.json`; regenerate the English page with Node.js:
+
+```sh
+node scripts/build-site.mjs
+python3 -m http.server 4173 --bind 127.0.0.1 --directory docs
+```
+
+Open `http://127.0.0.1:4173/` for Korean or `/en/` for English. Commit the generated `docs/en/index.html` too. Pushing `main` publishes the static `docs/` directory; there are no website package dependencies. Node.js is only needed when regenerating the English page, not for building the macOS app.
+
 ## Project layout
 
 | Path | Purpose |
@@ -131,6 +144,8 @@ Quit an existing copy before replacing it.
 | `scripts/make_icon.swift` | Native app icon generation. |
 | `scripts/build.sh` / `scripts/package.sh` | Native or universal build, and release packaging. |
 | `scripts/test.sh` / `Tests/` | Core tests and the standalone test runner. |
+| `docs/index.html` / `docs/assets/` / `docs/en/` | Public website and interactive browser demo. |
+| `scripts/build-site.mjs` / `scripts/site-en.json` | English website generation and translation text. |
 
 `Package.swift` also includes Swift Testing tests for `swift test`. The standalone runner avoids a local SwiftPM framework-loading issue encountered on the development Mac.
 

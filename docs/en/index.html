@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>BookmarkPet — A little note for your next step</title>
+  <meta name="description" content="Leave a note before you close your Mac. A tiny macOS menu bar companion that remembers your next step. Free and open source.">
+  <meta name="theme-color" content="#ffffff">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="BookmarkPet — A little note for your next step">
+  <meta property="og:description" content="Leave a note before you close your Mac. A tiny macOS menu bar companion that remembers your next step. Free and open source.">
+  <meta property="og:url" content="https://s4lmon-sh.github.io/BookmarkPet/en/">
+  <meta property="og:locale" content="en_US">
+  <link rel="canonical" href="https://s4lmon-sh.github.io/BookmarkPet/en/">
+  <link rel="alternate" hreflang="ko" href="https://s4lmon-sh.github.io/BookmarkPet/">
+  <link rel="alternate" hreflang="en" href="https://s4lmon-sh.github.io/BookmarkPet/en/">
+  <link rel="icon" type="image/svg+xml" href="../assets/bookmarkpet.svg">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script src="../assets/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main" data-copy="skip">Skip to content</a>
+  <header class="site-header wrap">
+    <a class="brand" href="./" aria-label="BookmarkPet home">
+      <img src="../assets/bookmarkpet.svg" width="38" height="38" alt="">
+      <span>BookmarkPet</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a class="nav-source" href="https://github.com/S4lmon-SH/BookmarkPet" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <div class="language-switch" aria-label="Language">
+        <a href="../" lang="ko" data-language="ko">한국어</a>
+        <a href="./" lang="en" aria-current="page" data-language="en">EN</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <h1 id="hero-title"><span data-copy="hero1">Leave a note.</span><br><span class="accent-text" data-copy="hero2">Pick up later.</span></h1>
+        <p class="hero-description" data-copy="heroDescription">A little note before you close your Mac.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://github.com/S4lmon-SH/BookmarkPet/releases/download/v0.1.0/BookmarkPet-0.1.0-universal.zip" data-copy="download">Download for Mac</a>
+          <a class="button secondary" href="https://github.com/S4lmon-SH/BookmarkPet" target="_blank" rel="noopener noreferrer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m12 3 2.8 5.7 6.3.9-4.5 4.4 1.1 6.2-5.7-3-5.7 3 1.1-6.2-4.5-4.4 6.3-.9Z"/></svg><span data-copy="star">Star on GitHub</span></a>
+        </div>
+        <p class="requirements" data-copy="requirements">Free · macOS 13+ · Apple Silicon / Intel</p>
+        <p class="preview-note"><span data-copy="previewNote">v0.1.0 Preview</span> <a href="#install" data-copy="installHelp" data-open-install>First launch</a></p>
+      </div>
+
+      <div class="demo-column">
+        <div class="demo-label"><span data-copy="tryLabel">Try it here</span></div>
+        <div class="mac-demo" id="mac-demo">
+          <div class="mac-menubar">
+            <div class="mac-menu-left" aria-hidden="true"><span class="finder-word">Finder</span><span>파일</span><span>편집</span><span>보기</span></div>
+            <div class="mac-menu-right">
+              <button class="pet-toggle has-note" id="pet-toggle" type="button" aria-label="메모 열기 또는 닫기" aria-expanded="true" aria-controls="demo-popover">
+                <svg class="status-pet" width="27" height="20" viewBox="0 0 27 20" aria-hidden="true">
+                  <defs>
+                    <mask id="pet-face"><rect width="27" height="20" fill="white"/><g fill="black"><path d="M6 1 11 5.1 16 1Z"/><ellipse cx="8.025" cy="12.1" rx=".825" ry="1"/><ellipse cx="13.975" cy="12.1" rx=".825" ry="1"/><path d="M9.1 8.6C10 7.6 12 7.6 12.9 8.6" fill="none" stroke="black" stroke-width=".9"/></g></mask>
+                    <mask id="badge-face"><rect width="27" height="20" fill="white"/><g transform="translate(0 20) scale(1 -1)" fill="black"><rect x="20.6" y="15" width="1.35" height="3.3" rx=".6"/><circle cx="21.275" cy="13.925" r=".625"/></g></mask>
+                  </defs>
+                  <g transform="translate(0 20) scale(1 -1)"><rect x="4" y="1.5" width="14" height="17" rx="3" fill="currentColor" mask="url(#pet-face)"/></g>
+                  <g id="memo-badge" mask="url(#badge-face)"><circle cx="21.3" cy="4.3" r="4.1" fill="currentColor"/></g>
+                </svg>
+              </button>
+              <span class="mac-clock" aria-hidden="true">09:41</span>
+            </div>
+          </div>
+          <div class="desktop-paper" aria-hidden="true">
+            <div class="paper-toolbar"><span></span><span></span><span></span><em>Untitled</em></div>
+            <div class="paper-content"><p class="paper-kicker">A WORK IN PROGRESS</p><p class="paper-title" data-copy="paperTitle">A little progress.</p><span class="paper-line long"></span><span class="paper-line"></span><span class="paper-line short"></span><p class="paper-signoff" data-copy="paperSignoff">The rest can wait.</p></div>
+          </div>
+          <div class="demo-popover" id="demo-popover" role="region" aria-labelledby="demo-prompt">
+            <div class="popover-heading"><h2 id="demo-prompt">돌아오면 무엇부터 할까요?</h2><button id="settings-toggle" class="settings-toggle" type="button" aria-label="메모 및 설정" aria-expanded="false" aria-controls="demo-settings"><svg width="17" height="17" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button></div>
+            <label class="visually-hidden" for="demo-note" data-copy="noteLabel">Try writing your next step</label>
+            <textarea id="demo-note" rows="4" spellcheck="false">Polish the first paragraph
+Find two references</textarea>
+            <div class="demo-settings" id="demo-settings" role="group" aria-label="메모 설정" hidden><button id="clear-note" type="button">메모 비우기</button><button id="undo-clear" type="button" disabled>되돌리기</button></div>
+          </div>
+          <div class="desktop-caption"><span class="caption-bookmark" aria-hidden="true"></span><span data-copy="desktopCaption">A bookmark for your next session.</span></div>
+        </div>
+        <div class="demo-footer"><p id="demo-state" aria-live="polite">Note waiting · ! badge on</p><button id="reset-demo" type="button" data-copy="resetDemo">Reset</button></div>
+        <p class="demo-disclaimer" data-copy="demoDisclaimer">Demo resets on reload. The app UI is currently in Korean.</p>
+        <noscript><p class="demo-disclaimer" data-copy="noScript">Enable JavaScript to try the demo.</p></noscript>
+      </div>
+    </section>
+
+    <section class="how-section wrap" id="how" aria-labelledby="how-title">
+      <h2 id="how-title" class="visually-hidden" data-copy="howTitle">How it works</h2>
+      <ol class="steps">
+        <li><span class="step-number" aria-hidden="true">01</span><h3 data-copy="step1Title">Leave a note</h3><p data-copy="step1Body">Write your next step.</p></li>
+        <li><span class="step-number" aria-hidden="true">02</span><h3 data-copy="step2Title">Saved for later</h3><p data-copy="step2Body">It stays when you close the app.</p></li>
+        <li><span class="step-number" aria-hidden="true">03</span><h3 data-copy="step3Title">Pick up again</h3><p data-copy="step3Body">Click the pet when you return.</p></li>
+      </ol>
+    </section>
+
+    <section class="faq-section wrap" aria-labelledby="faq-title">
+      <h2 id="faq-title" data-copy="faqTitle">Before you start</h2>
+      <div class="faq-list">
+        <details id="install"><summary data-copy="installQuestion">How do I install it?</summary><div class="faq-answer"><ol><li data-copy="install1">Download and unzip the archive.</li><li data-copy="install2">Move BookmarkPet.app into your Applications folder and open it.</li><li data-copy="install3">Find the bookmark pet in your menu bar and click it.</li></ol><p data-copy="installWarning">This preview has no Developer ID signature or Apple notarization. macOS may block it. If you trust the download, try opening it once, then check System Settings → Privacy &amp; Security → Open Anyway. Managed Macs may not allow this.</p><p><a href="https://support.apple.com/en-us/102445" data-apple-link data-copy="appleHelp">Apple’s first-launch instructions</a><span class="link-divider" aria-hidden="true">·</span><a href="https://github.com/S4lmon-SH/BookmarkPet/blob/main/README.md#build-from-source" data-readme-link data-copy="buildYourself">Build from source</a></p></div></details>
+        <details><summary data-copy="storageQuestion">Where is my note saved?</summary><div class="faq-answer"><p data-copy="storageBody">In a plain text file on your Mac. No account or cloud transfer. The file is not encrypted by BookmarkPet and remains after you delete the app.</p><code class="storage-path">~/Library/Application Support/BookmarkPet/memo.txt</code><p data-copy="undoBody">Use the ☰ menu to clear the note or undo the latest clear. Clear undo is available until your next edit or app exit.</p></div></details>
+        <details><summary data-copy="loginQuestion">Can it launch at login?</summary><div class="faq-answer"><p data-copy="loginBody">Keep the app in your Applications folder, then turn on 로그인 시 실행 (Launch at login) in the ☰ menu. The menu explains when system approval is needed.</p><p data-copy="loginLimitation">Actual reboot/login, Intel Mac, and macOS 13 execution have not yet been verified.</p><p><a href="https://github.com/S4lmon-SH/BookmarkPet/blob/main/docs/VERIFICATION.md" data-copy="verification">Verification results</a></p></div></details>
+        <details id="site-privacy"><summary data-copy="websitePrivacyQuestion">What happens to my demo note?</summary><div class="faq-answer"><p data-copy="websitePrivacyBody">It stays only in this page’s memory. It is not sent to a server or saved in browser storage. Reloading or switching languages resets it. This website uses no analytics or advertising tools.</p><p><span data-copy="hostingPrivacy">GitHub Pages, our hosting provider, may log visitor IP addresses for security.</span> <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages#data-collection" data-copy="hostingPolicy">Learn more</a></p></div></details>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer wrap"><div><a class="footer-brand" href="./">BookmarkPet</a><p class="footer-tagline" data-copy="footerTagline">A little note for your next step.</p></div><div class="footer-links"><a href="https://github.com/S4lmon-SH/BookmarkPet" target="_blank" rel="noopener noreferrer">GitHub</a><a href="https://github.com/S4lmon-SH/BookmarkPet/blob/main/README.md" data-readme-link data-copy="readme">Guide</a><a href="#site-privacy" data-open-privacy data-copy="privacy">Privacy</a><a href="https://github.com/S4lmon-SH/BookmarkPet/blob/main/LICENSE">MIT License</a></div><p class="footer-credit">© 2026 <a href="https://github.com/S4lmon-SH">S4lmon</a></p></footer>
+</body>
+</html>
