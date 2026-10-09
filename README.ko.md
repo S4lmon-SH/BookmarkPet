@@ -10,7 +10,7 @@
 
 [English](README.md) · **한국어**
 
-[공식 홈페이지](https://s4lmon-sh.github.io/BookmarkPet/) · [v0.1.0 다운로드](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.0) · [버그 제보](https://github.com/S4lmon-SH/BookmarkPet/issues) · [MIT 라이선스](LICENSE)
+[공식 홈페이지](https://s4lmon-sh.github.io/BookmarkPet/) · [v0.1.1 다운로드](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.1) · [버그 제보](https://github.com/S4lmon-SH/BookmarkPet/issues) · [MIT 라이선스](LICENSE)
 
 <p align="center">
   <img src="docs/images/popover.png" width="332" alt="두 줄의 메모와 설정 버튼이 있는 BookmarkPet 실제 팝오버 화면" />
@@ -42,13 +42,13 @@
 
 **macOS 13 Ventura 이상**이 필요합니다. 배포 파일은 Apple Silicon과 Intel 실행 파일을 함께 포함한 유니버설 앱입니다.
 
-1. [Releases](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.0)에서 `BookmarkPet-0.1.0-universal.zip`을 다운로드합니다.
+1. [Releases](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.1)에서 `BookmarkPet-0.1.1-universal.zip`을 다운로드합니다.
 2. 압축을 풀고 `BookmarkPet.app`을 `/Applications` 또는 `~/Applications`로 옮깁니다.
 3. 앱을 실행하고 메뉴바에서 책갈피 펫을 찾습니다. Dock 아이콘은 나타나지 않습니다.
 
 ### 처음 실행할 때의 보안 안내
 
-v0.1.0은 임시 서명만 적용한 **실험적인 개발 버전**이며, **Apple 공증을 받지 않았습니다**. macOS가 첫 실행을 차단할 수 있습니다. 다운로드를 신뢰한다면 [Apple의 안내](https://support.apple.com/ko-kr/102445)에 따라 실행을 한 번 시도한 뒤 **시스템 설정 → 개인정보 보호 및 보안 → 그래도 열기**를 사용할 수 있습니다. 해당 버튼의 제공 여부는 시스템 설정에 따라 다를 수 있습니다. 아래 방법으로 소스에서 직접 빌드할 수도 있습니다.
+v0.1.1은 임시 서명만 적용한 **실험적인 개발 버전**이며, **Apple 공증을 받지 않았습니다**. macOS가 첫 실행을 차단할 수 있습니다. 다운로드를 신뢰한다면 [Apple의 안내](https://support.apple.com/ko-kr/102445)에 따라 실행을 한 번 시도한 뒤 **시스템 설정 → 개인정보 보호 및 보안 → 그래도 열기**를 사용할 수 있습니다. 해당 버튼의 제공 여부는 시스템 설정에 따라 다를 수 있습니다. 아래 방법으로 소스에서 직접 빌드할 수도 있습니다.
 
 릴리스에 `SHA256SUMS.txt`도 제공합니다. 압축 파일과 같은 폴더에 두고 다음 명령으로 다운로드 파일을 확인할 수 있습니다.
 
@@ -69,6 +69,12 @@ shasum -a 256 -c SHA256SUMS.txt
 | BookmarkPet 종료 | 메모를 보존하고 앱을 종료합니다. |
 
 편집기에서 **⌘V** 붙여넣기, **⌘C** 복사, **⌘X** 잘라내기, **⌘A** 전체 선택, **⌘Z** 실행 취소, **⇧⌘Z** 다시 실행을 사용할 수 있습니다. 입력기 조합 중이 아닐 때 Escape를 누르면 팝오버가 닫힙니다.
+
+### 메모 속 링크
+
+`https://`, `http://`, `www.` 웹 주소는 링크 색과 밑줄로 표시합니다. 한 번 클릭하면 기본 브라우저로 열립니다. **Option(⌥) 키를 누른 채 클릭**하면 주소 안에 커서를 놓고 편집할 수 있고, 드래그하면 링크를 포함한 텍스트를 선택할 수 있습니다. 입력·붙여넣기·다시 열기·비우기 되돌리기 후에도 링크를 감지하며, 저장 파일은 원래의 일반 텍스트를 그대로 보존합니다.
+
+v0.1.1부터 사용할 수 있습니다.
 
 ### 로그인 시 실행
 
@@ -109,7 +115,7 @@ open ./build/BookmarkPet.app
 ./scripts/package.sh
 ```
 
-결과물은 `build/release/BookmarkPet-0.1.0-universal.zip`과 `SHA256SUMS.txt`입니다. 빌드 결과물은 Git에서 제외합니다.
+결과물은 `build/release/BookmarkPet-0.1.1-universal.zip`과 `SHA256SUMS.txt`입니다. 빌드 결과물은 Git에서 제외합니다.
 
 사용자별 응용 프로그램 폴더에 설치할 수도 있습니다.
 

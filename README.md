@@ -10,7 +10,7 @@ A tiny macOS menu bar companion that keeps one note for your next work session. 
 
 **English** · [한국어](README.ko.md)
 
-[Website](https://s4lmon-sh.github.io/BookmarkPet/en/) · [Download v0.1.0](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.0) · [Report a bug](https://github.com/S4lmon-SH/BookmarkPet/issues) · [MIT license](LICENSE)
+[Website](https://s4lmon-sh.github.io/BookmarkPet/en/) · [Download v0.1.1](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.1) · [Report a bug](https://github.com/S4lmon-SH/BookmarkPet/issues) · [MIT license](LICENSE)
 
 <p align="center">
   <img src="docs/images/popover.png" width="332" alt="Actual BookmarkPet popover with a two-line Korean note and a settings menu button" />
@@ -42,13 +42,13 @@ The app interface is currently **in Korean**. The prompt “돌아오면 무엇�
 
 Requires **macOS 13 Ventura or later**. The release archive includes Apple Silicon and Intel executables in one universal app.
 
-1. Download `BookmarkPet-0.1.0-universal.zip` from [Releases](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.0).
+1. Download `BookmarkPet-0.1.1-universal.zip` from [Releases](https://github.com/S4lmon-SH/BookmarkPet/releases/tag/v0.1.1).
 2. Unzip it and move `BookmarkPet.app` into `/Applications` or `~/Applications`.
 3. Open the app. Look for the bookmark pet in your menu bar; no Dock icon appears.
 
 ### First-launch security notice
 
-Version 0.1.0 is an **experimental development release**, signed ad hoc and **not notarized by Apple**. macOS may block the first launch. If you trust this download, follow [Apple’s instructions](https://support.apple.com/en-us/102445): try opening it, then use **System Settings → Privacy & Security → Open Anyway**, if available. You can also build the app locally from the source below.
+Version 0.1.1 is an **experimental development release**, signed ad hoc and **not notarized by Apple**. macOS may block the first launch. If you trust this download, follow [Apple’s instructions](https://support.apple.com/en-us/102445): try opening it, then use **System Settings → Privacy & Security → Open Anyway**, if available. You can also build the app locally from the source below.
 
 `SHA256SUMS.txt` is included with the release. To check the downloaded archive, place both files in the same folder and run:
 
@@ -69,6 +69,12 @@ Click **☰** at the right of the prompt.
 | BookmarkPet 종료 | Quit the app while preserving the note. |
 
 The editor supports **⌘V** paste, **⌘C** copy, **⌘X** cut, **⌘A** select all, **⌘Z** undo, and **⇧⌘Z** redo. Escape closes the popover when an input-method composition is not active.
+
+### Links in notes
+
+Web addresses starting with `https://`, `http://`, or `www.` appear underlined in the system link color. Click once to open one in your default browser. **Option-click** to place the cursor inside the address and edit it; drag to select text containing a link. Links are detected after edits, paste, reopening, and undoing a clear. The saved file remains the exact original plain text.
+
+Available starting with v0.1.1.
 
 ### Launch at login
 
@@ -109,7 +115,7 @@ To create a universal app and ZIP archive for distribution:
 ./scripts/package.sh
 ```
 
-Output: `build/release/BookmarkPet-0.1.0-universal.zip` and `SHA256SUMS.txt`. All build artifacts are ignored by Git.
+Output: `build/release/BookmarkPet-0.1.1-universal.zip` and `SHA256SUMS.txt`. All build artifacts are ignored by Git.
 
 For a per-user installation from source:
 

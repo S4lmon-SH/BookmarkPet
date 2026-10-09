@@ -58,4 +58,24 @@ struct MemoSessionTests {
         try session.undoClear()
         #expect(session.text == "새 메모")
     }
+
+    @Test func detectsWebLinksWithExactUTF16Ranges() throws {
+        let text = "  다음 🇰🇷\n(https://example.com/task?q=1#next),\nwww.example.org/start  "
+        let links = try MemoLinkDetector().links(in: text)
+        #expect(links.count == 2)
+        guard links.count == 2 else { return }
+        #expect((text as NSString).substring(with: links[0].range) == "https://example.com/task?q=1#next")
+        #expect(links[0].url.absoluteString == "https://example.com/task?q=1#next")
+        #expect((text as NSString).substring(with: links[1].range) == "www.example.org/start")
+        #expect(links[1].url.host == "www.example.org")
+    }
+
+    @Test func detectsOnlyCurrentWebLinks() throws {
+        let detector = try MemoLinkDetector()
+        #expect(detector.links(in: "test@example.com ftp://example.com file:///tmp/memo.txt").isEmpty)
+        #expect(detector.links(in: "https://example.com").count == 1)
+        #expect(detector.links(in: "주소 삭제 후 일반 메모").isEmpty)
+        #expect(!MemoLinkDetector.isWebURL(URL(string: "javascript:alert(1)")!))
+        #expect(!MemoLinkDetector.isWebURL(URL(string: "https:relative")!))
+    }
 }

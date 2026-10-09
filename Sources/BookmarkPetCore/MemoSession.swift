@@ -5,6 +5,33 @@ public protocol MemoStore {
     func save(_ text: String) throws
 }
 
+/// A web link's range uses UTF-16 offsets, as required by AppKit text storage.
+public struct MemoLink: Equatable, Sendable {
+    public let range: NSRange
+    public let url: URL
+}
+
+public struct MemoLinkDetector {
+    private let detector: NSDataDetector
+
+    public init() throws {
+        detector = try NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+    }
+
+    public func links(in text: String) -> [MemoLink] {
+        detector.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap { match in
+            guard let url = match.url, Self.isWebURL(url) else { return nil }
+            return MemoLink(range: match.range, url: url)
+        }
+    }
+
+    public static func isWebURL(_ url: URL) -> Bool {
+        guard let scheme = url.scheme?.lowercased(), scheme == "http" || scheme == "https",
+              let host = url.host, !host.isEmpty else { return false }
+        return true
+    }
+}
+
 /// One UTF-8 file, atomically replaced on every edit. No text normalization occurs.
 public struct MemoFileStore: MemoStore {
     public let fileURL: URL

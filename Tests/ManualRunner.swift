@@ -47,6 +47,27 @@ struct ManualRunner {
         }
         passed += 1
 
+        try check("web links preserve Korean UTF-16 ranges and punctuation") {
+            let text = "  다음 🇰🇷\n(https://example.com/task?q=1#next),\nwww.example.org/start  "
+            let links = try MemoLinkDetector().links(in: text)
+            try expect(links.count == 2)
+            try expect((text as NSString).substring(with: links[0].range) == "https://example.com/task?q=1#next")
+            try expect(links[0].url.absoluteString == "https://example.com/task?q=1#next")
+            try expect((text as NSString).substring(with: links[1].range) == "www.example.org/start")
+            try expect(links[1].url.host == "www.example.org")
+        }
+        passed += 1
+
+        try check("web links exclude other schemes and update after editing") {
+            let detector = try MemoLinkDetector()
+            try expect(detector.links(in: "test@example.com ftp://example.com file:///tmp/memo.txt").isEmpty)
+            try expect(detector.links(in: "https://example.com").count == 1)
+            try expect(detector.links(in: "주소 삭제 후 일반 메모").isEmpty)
+            try expect(!MemoLinkDetector.isWebURL(URL(string: "javascript:alert(1)")!))
+            try expect(!MemoLinkDetector.isWebURL(URL(string: "https:relative")!))
+        }
+        passed += 1
+
         print("\(passed) core tests passed")
     }
 

@@ -1,5 +1,36 @@
 # Verification / 검증
 
+## Note links — v0.1.1, 2026-10-09
+
+- Added HTTP/HTTPS web-link detection, including `www.` addresses, using Foundation data detection. Tests cover Korean/emoji UTF-16 ranges, surrounding punctuation, excluding other schemes, and removing links after an edit.
+- `./scripts/test.sh`: six core tests passed. The universal development app compiled for `arm64` and `x86_64` and passed strict code-signature validation.
+- The v0.1.1 release ZIP was extracted into a fresh directory. Its app version, universal architectures, property list, strict signature, archive contents, checksum, and all 18 native UI checks passed.
+- Native AppKit diagnostics exercise single-click link activation, Option-click caret placement, dragging to select link text, pasting, editing a URL, text undo, closing/reopening, clear/undo, and restoring link metadata from an existing memo file. Click tests capture the requested URL without depending on network availability.
+- An opt-in `--verify-open-link` check successfully handed a URL to the system's default-browser handler through `NSWorkspace`. Browser page loading was not independently verified through GUI automation.
+- Diagnostics use separate test memo files and synthetic AppKit input events; physical mouse interaction and live IME composition remain manual checks. Link styling is skipped while IME text is marked.
+- The feature is included in the public v0.1.1 universal preview release. Both website languages and READMEs link to v0.1.1; v0.1.0 is retained as a previous release.
+
+### 메모 속 링크
+
+HTTP/HTTPS 및 `www.` 주소를 감지하고, 한 번 클릭하면 기본 브라우저로 연결합니다. Option 클릭으로 주소를 편집하고 드래그로 선택할 수 있습니다. 한글·이모지의 UTF-16 범위, 주소 주변 문장부호, 다른 스킴 제외, 주소 수정 후 링크 해제를 포함해 핵심 테스트 6개가 통과했습니다.
+
+v0.1.1 ZIP을 새 폴더에 풀어 앱 버전·유니버설 아키텍처·속성 목록·엄격한 서명·포함 파일·체크섬을 확인했고, 압축에서 꺼낸 앱의 네이티브 UI 진단 18개도 통과했습니다.
+
+실제 AppKit 편집기에 합성 입력 이벤트를 보내 클릭·Option 클릭·드래그·붙여넣기·주소 수정·실행 취소·팝오버 다시 열기·비우기 되돌리기·저장 파일에서 링크 복원을 검사했습니다. 브라우저 연결 API의 요청 성공은 확인했지만 GUI 자동화로 웹페이지 로딩을 독립적으로 확인하지는 못했습니다. 물리 마우스 조작과 실제 한글 입력기 조합은 수동 확인 항목으로 남깁니다.
+
+공개 유니버설 개발 버전 v0.1.1에 포함했습니다. 홈페이지와 두 README의 다운로드는 v0.1.1로 연결하며 v0.1.0은 이전 릴리스로 남깁니다.
+
+Reproduce native checks with an isolated memo (the second run checks relaunch restoration):
+
+```sh
+./scripts/test.sh
+./scripts/build.sh --universal
+./build/BookmarkPet.app/Contents/MacOS/BookmarkPet --verify-ui "$PWD/.build/manual/link-ui.txt"
+./build/BookmarkPet.app/Contents/MacOS/BookmarkPet --verify-ui "$PWD/.build/manual/link-ui.txt"
+```
+
+Every line in the resulting report must end in `: true`. Add `--verify-open-link` only when intentionally opening a test URL in the default browser. Use a fresh report path for the initial empty-note check.
+
 ## English
 
 Development environment: macOS 26.6.2, Apple Silicon (arm64), Swift 6.3.3, Apple Command Line Tools. Minimum deployment target: macOS 13.

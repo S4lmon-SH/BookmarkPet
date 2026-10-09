@@ -203,10 +203,14 @@ private final class BookmarkPetDelegate: NSObject, NSApplicationDelegate, NSPopo
             var checks = [String]()
             checks.append("popover visible: \(self.popover.isShown)")
             checks.append("editor focused: \(editor.window?.firstResponder === editor)")
-            checks.append("empty badge: \(!memo.hasMemo)")
+            let expectedBadge = !memo.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            let expectedTooltip = expectedBadge ? "BookmarkPet — 저장된 메모 있음" : "BookmarkPet — 메모 없음"
+            checks.append("initial badge matches restored memo: \(memo.hasMemo == expectedBadge && self.statusItem?.button?.toolTip == expectedTooltip)")
+            let restoredLinks = (try? MemoLinkDetector().links(in: memo.text)) ?? []
+            checks.append("initial text and links restored from file: \(editor.string == memo.text && restoredLinks.allSatisfy { editor.textStorage?.attribute(.link, at: $0.range.location, effectiveRange: nil) as? URL == $0.url })")
             checks.append("fixed status width: \(self.statusItem?.length == 29)")
             checks.append("template status icon: \(self.statusItem?.button?.image?.isTemplate == true)")
-            let content = "  한글 메모\n두 번째 줄  "
+            let content = "  한글 메모\nhttps://example.com/task?q=1#next\n두 번째 줄  "
             let pasteboard = NSPasteboard.general
             let previousItems = (pasteboard.pasteboardItems ?? []).map { item in
                 let copy = NSPasteboardItem()
@@ -217,6 +221,7 @@ private final class BookmarkPetDelegate: NSObject, NSApplicationDelegate, NSPopo
             }
             pasteboard.clearContents()
             pasteboard.setString(content, forType: .string)
+            editor.setSelectedRange(NSRange(location: 0, length: (editor.string as NSString).length))
             if let pasteEvent = NSEvent.keyEvent(
                 with: .keyDown, location: .zero, modifierFlags: .command,
                 timestamp: ProcessInfo.processInfo.systemUptime,
@@ -228,11 +233,18 @@ private final class BookmarkPetDelegate: NSObject, NSApplicationDelegate, NSPopo
             pasteboard.clearContents()
             pasteboard.writeObjects(previousItems)
             checks.append("Command+V pastes and persists with badge: \(memo.text == content && memo.hasMemo && self.statusItem?.button?.toolTip == "BookmarkPet — 저장된 메모 있음")")
+            if let editor = editor as? EscapableTextView {
+                checks += self.verifyEditorLinks(editor, memo: memo, content: content)
+            }
+            try? (checks.joined(separator: "\n") + "\n").write(to: output, atomically: true, encoding: .utf8)
             self.popover.performClose(nil)
             self.togglePopover()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [weak self] in
                 guard let self else { return }
                 checks.append("reopen restores text: \(self.editor?.string == content)")
+                let linkIndex = (content as NSString).range(of: "https://").location
+                let reopenedStorage = self.editor?.textStorage
+                checks.append("reopen restores clickable link: \(linkIndex < (reopenedStorage?.length ?? 0) && reopenedStorage?.attribute(.link, at: linkIndex, effectiveRange: nil) as? URL != nil)")
                 memo.clear()
                 DispatchQueue.main.async { [weak self] in
                     guard let self else { return }
@@ -241,14 +253,86 @@ private final class BookmarkPetDelegate: NSObject, NSApplicationDelegate, NSPopo
                     DispatchQueue.main.async { [weak self] in
                         guard let self else { return }
                         checks.append("undo restores editor and badge: \(self.editor?.string == content && memo.hasMemo && self.statusItem?.button?.toolTip == "BookmarkPet — 저장된 메모 있음")")
+                        let restoredStorage = self.editor?.textStorage
+                        checks.append("undo clear restores clickable link: \(linkIndex < (restoredStorage?.length ?? 0) && restoredStorage?.attribute(.link, at: linkIndex, effectiveRange: nil) as? URL != nil)")
+                        if ProcessInfo.processInfo.arguments.contains("--verify-open-link"),
+                           let editor = self.editor as? EscapableTextView {
+                            let originalOpenLink = editor.openLink
+                            var opened = false
+                            editor.openLink = { opened = originalOpenLink($0); return opened }
+                            editor.clicked(onLink: URL(string: "https://example.com")!, at: linkIndex)
+                            checks.append("default browser accepts web link: \(opened)")
+                            editor.openLink = originalOpenLink
+                        }
                         let report = checks.joined(separator: "\n") + "\n"
                         try? report.write(to: output, atomically: true, encoding: .utf8)
                         self.popover.performClose(nil)
-                        NSApp.terminate(nil)
+                        if ProcessInfo.processInfo.arguments.contains("--verify-open-link") {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { NSApp.terminate(nil) }
+                        } else {
+                            NSApp.terminate(nil)
+                        }
                     }
                 }
             }
         }
+    }
+
+    private func verifyEditorLinks(_ editor: EscapableTextView, memo: MemoViewModel, content: String) -> [String] {
+        var checks = [String]()
+        let expectedURL = URL(string: "https://example.com/task?q=1#next")!
+        let linkRange = (content as NSString).range(of: expectedURL.absoluteString)
+        checks.append("paste detects link without rewriting text: \(editor.string == content && editor.textStorage?.attribute(.link, at: linkRange.location, effectiveRange: nil) as? URL == expectedURL)")
+        guard let manager = editor.layoutManager, let container = editor.textContainer,
+              let window = editor.window else { return checks + ["link click geometry: false"] }
+        manager.ensureLayout(for: container)
+        let glyph = manager.glyphIndexForCharacter(at: linkRange.location + 2)
+        let rect = manager.boundingRect(forGlyphRange: NSRange(location: glyph, length: 1), in: container)
+        let point = editor.convert(NSPoint(x: rect.midX + editor.textContainerOrigin.x,
+                                           y: rect.midY + editor.textContainerOrigin.y), to: nil)
+        var openedURLs = [URL]()
+        let originalOpenLink = editor.openLink
+        editor.openLink = { openedURLs.append($0); return true }
+        defer { editor.openLink = originalOpenLink }
+
+        func click(modifiers: NSEvent.ModifierFlags = [], dragTo endPoint: NSPoint? = nil) {
+            let time = ProcessInfo.processInfo.systemUptime
+            guard let down = NSEvent.mouseEvent(with: .leftMouseDown, location: point,
+                modifierFlags: modifiers, timestamp: time, windowNumber: window.windowNumber,
+                context: nil, eventNumber: 1, clickCount: 1, pressure: 1),
+                let up = NSEvent.mouseEvent(with: .leftMouseUp, location: endPoint ?? point,
+                modifierFlags: modifiers, timestamp: time + 0.01, windowNumber: window.windowNumber,
+                context: nil, eventNumber: 2, clickCount: 1, pressure: 0) else { return }
+            NSApp.postEvent(up, atStart: true)
+            if let endPoint, let drag = NSEvent.mouseEvent(with: .leftMouseDragged, location: endPoint,
+                modifierFlags: modifiers, timestamp: time + 0.005, windowNumber: window.windowNumber,
+                context: nil, eventNumber: 3, clickCount: 1, pressure: 1) {
+                NSApp.postEvent(drag, atStart: true)
+            }
+            editor.mouseDown(with: down)
+        }
+
+        click()
+        checks.append("single click opens expected URL without changing memo: \(openedURLs == [expectedURL] && editor.string == content && memo.text == content)")
+        editor.setSelectedRange(NSRange(location: 0, length: 0))
+        click(modifiers: .option)
+        checks.append("Option click edits link without opening it: \(openedURLs.count == 1 && editor.selectedRange().location > linkRange.location && editor.string == content)")
+        let endGlyph = manager.glyphIndexForCharacter(at: linkRange.location + 12)
+        let endRect = manager.boundingRect(forGlyphRange: NSRange(location: endGlyph, length: 1), in: container)
+        let endPoint = editor.convert(NSPoint(x: endRect.midX + editor.textContainerOrigin.x,
+                                             y: endRect.midY + editor.textContainerOrigin.y), to: nil)
+        click(dragTo: endPoint)
+        checks.append("drag selects link text without opening it: \(openedURLs.count == 1 && editor.selectedRange().length > 0 && editor.string == content)")
+        editor.setSelectedRange(NSRange(location: linkRange.location, length: linkRange.length))
+        editor.breakUndoCoalescing()
+        editor.undoManager?.beginUndoGrouping()
+        editor.insertText("주소 수정", replacementRange: editor.selectedRange())
+        editor.undoManager?.endUndoGrouping()
+        let hasAnyLink = ((try? MemoLinkDetector().links(in: editor.string)) ?? []).isEmpty == false
+        checks.append("editing URL removes stale link and persists: \(!hasAnyLink && memo.text == editor.string && editor.textStorage?.attribute(.link, at: linkRange.location, effectiveRange: nil) == nil)")
+        editor.undoManager?.undoNestedGroup()
+        checks.append("text undo restores original URL and storage: \(editor.string == content && memo.text == content && linkRange.location < (editor.textStorage?.length ?? 0) && editor.textStorage?.attribute(.link, at: linkRange.location, effectiveRange: nil) as? URL == expectedURL)")
+        return checks
     }
 
     private func verifyLoginItemRegistration() {
@@ -576,11 +660,18 @@ private struct MemoEditor: NSViewRepresentable {
         editor.allowsUndo = true
         editor.isAutomaticQuoteSubstitutionEnabled = false
         editor.isAutomaticDashSubstitutionEnabled = false
+        editor.isAutomaticLinkDetectionEnabled = false
+        editor.linkTextAttributes = [
+            .foregroundColor: NSColor.linkColor,
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+            .cursor: NSCursor.pointingHand
+        ]
         editor.font = .systemFont(ofSize: 13)
         editor.textColor = .labelColor
         editor.drawsBackground = false
         editor.textContainerInset = NSSize(width: 8, height: 7)
         editor.string = text
+        editor.refreshLinks()
         editor.delegate = context.coordinator
         editor.onEscape = onEscape
         scroll.documentView = editor
@@ -589,13 +680,14 @@ private struct MemoEditor: NSViewRepresentable {
     }
 
     func updateNSView(_ scroll: NSScrollView, context: Context) {
-        guard let editor = scroll.documentView as? NSTextView else { return }
+        guard let editor = scroll.documentView as? EscapableTextView else { return }
         context.coordinator.onChange = onChange
         context.coordinator.onEscape = onEscape
         if editor.string != text && !editor.hasMarkedText() {
             // Clear/restore replaces the document outside the text undo stack.
             editor.undoManager?.removeAllActions()
             editor.string = text
+            editor.refreshLinks()
         }
     }
 
@@ -611,12 +703,79 @@ private struct MemoEditor: NSViewRepresentable {
         func textDidChange(_ notification: Notification) {
             guard let editor = notification.object as? NSTextView else { return }
             onChange(editor.string)
+            (editor as? EscapableTextView)?.refreshLinks()
+        }
+
+        func textView(_ textView: NSTextView, clickedOnLink link: Any, at charIndex: Int) -> Bool {
+            guard let editor = textView as? EscapableTextView,
+                  let url = link as? URL, MemoLinkDetector.isWebURL(url) else { return true }
+            if !editor.openLink(url) { NSSound.beep() }
+            return true
         }
     }
 }
 
 private final class EscapableTextView: NSTextView {
     var onEscape: (() -> Void)?
+    var openLink: (URL) -> Bool = { NSWorkspace.shared.open($0) }
+    private let linkDetector = try? MemoLinkDetector()
+
+    func refreshLinks() {
+        // Link metadata changes presentation only. Never rewrite the memo or
+        // touch marked text while the input method is composing it.
+        guard !hasMarkedText(), let storage = textStorage else { return }
+        let range = NSRange(location: 0, length: storage.length)
+        storage.beginEditing()
+        storage.removeAttribute(.link, range: range)
+        for link in linkDetector?.links(in: string) ?? [] {
+            storage.addAttribute(.link, value: link.url, range: link.range)
+        }
+        storage.endEditing()
+        typingAttributes.removeValue(forKey: .link)
+        window?.invalidateCursorRects(for: self)
+    }
+
+    override func unmarkText() {
+        super.unmarkText()
+        refreshLinks()
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard !hasMarkedText(), let link = link(at: convert(event.locationInWindow, from: nil)) else {
+            super.mouseDown(with: event)
+            return
+        }
+        let editingModifiers: NSEvent.ModifierFlags = [.option, .shift, .control]
+        if event.clickCount == 1 && event.modifierFlags.intersection(editingModifiers).isEmpty,
+           let next = NSApp.nextEvent(matching: [.leftMouseUp, .leftMouseDragged],
+                                     until: .distantFuture, inMode: .eventTracking, dequeue: false),
+           next.type == .leftMouseUp {
+            // Open on release, so dragging across a URL can still select text.
+            _ = NSApp.nextEvent(matching: .leftMouseUp, until: .distantFuture,
+                               inMode: .eventTracking, dequeue: true)
+            clicked(onLink: link.url, at: link.index)
+            return
+        }
+        // Option-click, multi-click, Shift-click, and dragging use the normal
+        // editable text behavior without AppKit following the link again.
+        textStorage?.removeAttribute(.link, range: NSRange(location: 0, length: textStorage?.length ?? 0))
+        super.mouseDown(with: event)
+        refreshLinks()
+    }
+
+    private func link(at point: NSPoint) -> (url: URL, index: Int)? {
+        guard let layoutManager, let textContainer, let textStorage,
+              layoutManager.numberOfGlyphs > 0 else { return nil }
+        let textPoint = NSPoint(x: point.x - textContainerOrigin.x, y: point.y - textContainerOrigin.y)
+        let glyph = layoutManager.glyphIndex(for: textPoint, in: textContainer)
+        guard glyph < layoutManager.numberOfGlyphs,
+              layoutManager.boundingRect(forGlyphRange: NSRange(location: glyph, length: 1),
+                                         in: textContainer).contains(textPoint) else { return nil }
+        let index = layoutManager.characterIndexForGlyph(at: glyph)
+        guard index < textStorage.length,
+              let url = textStorage.attribute(.link, at: index, effectiveRange: nil) as? URL else { return nil }
+        return (url, index)
+    }
 
     override func keyDown(with event: NSEvent) {
         if event.keyCode == 53 && !hasMarkedText() {
